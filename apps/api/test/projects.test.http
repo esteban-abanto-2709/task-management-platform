@@ -1,0 +1,60 @@
+@baseUrl = http://localhost:4000
+@token = your-token-here
+@projectId = project-id-here
+
+### Create a new project
+POST {{baseUrl}}/projects
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "My First Project",
+  "description": "This is a test project"
+}
+
+### Create another project (without description)
+POST {{baseUrl}}/projects
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Quick Project"
+}
+
+### Get all projects
+GET {{baseUrl}}/projects
+Authorization: Bearer {{token}}
+
+### Get a specific project (replace with actual ID)
+GET {{baseUrl}}/projects/{{projectId}}
+Authorization: Bearer {{token}}
+
+### Update a project (replace with actual ID)
+PATCH {{baseUrl}}/projects/{{projectId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Updated Project Name",
+  "description": "Updated description"
+}
+
+### Update only name (replace with actual ID)
+PATCH {{baseUrl}}/projects/{{projectId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "New Name Only"
+}
+
+### Delete a project (replace with actual ID)
+DELETE {{baseUrl}}/projects/{{projectId}}
+Authorization: Bearer {{token}}
+
+### Test without token (should fail with 401)
+GET {{baseUrl}}/projects
+
+### Test with invalid token (should fail with 401)
+GET {{baseUrl}}/projects
+Authorization: Bearer invalid-token-xyz
