@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 class ApiClient {
   private baseUrl: string;
@@ -44,6 +44,21 @@ class ApiClient {
     return this.request<T>(endpoint, {
       method: "POST",
       body: JSON.stringify(data),
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+  }
+
+  async patch<T>(endpoint: string, data?: any, token?: string): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+  }
+
+  async delete<T>(endpoint: string, token?: string): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: "DELETE",
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
   }
