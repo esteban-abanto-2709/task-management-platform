@@ -1,0 +1,85 @@
+"use client";
+
+import { Search, Sparkles, LogOut, User as UserIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+export default function DashboardHeader() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-slate-200/60 dark:border-slate-800/60 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80">
+      <div className="h-16 px-6 flex items-center justify-between gap-8">
+        {/* Logo - Left */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <h1 className="font-bold text-xl bg-linear-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+            TaskFlow
+          </h1>
+        </div>
+
+        {/* Search Bar - Center */}
+        <div className="flex-1 max-w-2xl">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <Input
+              type="text"
+              placeholder="Search projects, tasks..."
+              className="w-full pl-10 bg-slate-100/50 dark:bg-slate-800/50 border-slate-200/50 dark:border-slate-700/50"
+            />
+          </div>
+        </div>
+
+        {/* User Profile - Right */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex items-center gap-3 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  John Doe
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  john@example.com
+                </p>
+              </div>
+              <Avatar className="w-10 h-10">
+                <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+                <AvatarFallback className="bg-linear-to-br from-blue-500 to-indigo-600 text-white">
+                  <UserIcon className="w-5 h-5" />
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>
+              <div>
+                <p className="text-sm font-medium">John Doe</p>
+                <p className="text-xs text-muted-foreground">
+                  john@example.com
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-red-600 dark:text-red-400">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </header>
+  );
+}
