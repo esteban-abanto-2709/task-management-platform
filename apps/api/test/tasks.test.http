@@ -1,0 +1,48 @@
+@baseUrl = http://localhost:4000
+@token = your-token-here
+@projectId = project-id-here
+@taskId = task-id-here
+
+### Create Task
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "My New Task",
+  "description": "This is a task description",
+  "projectId": "{{projectId}}"
+}
+
+### Get All Tasks
+GET {{baseUrl}}/tasks
+Authorization: Bearer {{token}}
+
+### Get Tasks by Project
+GET {{baseUrl}}/tasks?projectId={{projectId}}
+Authorization: Bearer {{token}}
+
+### Get One Task (replace with actual ID)
+GET {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+
+### Update Task (replace with actual ID)
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "IN_PROGRESS",
+  "description": "Updated description"
+}
+
+### Delete Task (replace with actual ID)
+DELETE {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+
+### Test without token (should fail with 401)
+GET {{baseUrl}}/tasks
+
+### Test with invalid token (should fail with 401)
+GET {{baseUrl}}/tasks
+Authorization: Bearer invalid-token-xyz
