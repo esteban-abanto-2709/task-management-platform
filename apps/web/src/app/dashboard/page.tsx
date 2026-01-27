@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/contexts/auth-context";
-import { Project, CreateProjectDto } from "@/types/project";
-import { api } from "@/lib/api";
+import { useState } from "react";
+import { CreateProjectDto } from "@/types/project";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -29,38 +27,19 @@ import { Button } from "@/components/ui/button";
 import { FolderKanban, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { useProjects } from "@/hooks/useProjects";
+
 export default function DashboardNewPage() {
   const router = useRouter();
-  const { user, token } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const { projects, createProject } = useProjects();
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  useEffect(() => {
-    if (user && token) {
-      loadProjects();
-    }
-  }, [user, token]);
-
-  const loadProjects = async () => {
-    if (!token) return;
-
-    try {
-      const data = await api.get<Project[]>("/projects", token);
-      setProjects(data);
-    } catch (error) {
-      console.error("Failed to load projects:", error);
-    } finally {
-      setIsLoadingProjects(false);
-    }
-  };
-
   const handleCreateProject = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!token) return;
-
     setIsCreating(true);
+
     const formData = new FormData(e.currentTarget);
     const projectData: CreateProjectDto = {
       name: formData.get("name") as string,
@@ -68,16 +47,12 @@ export default function DashboardNewPage() {
     };
 
     try {
-      const newProject = await api.post<Project>(
-        "/projects",
-        projectData,
-        token,
-      );
+      const newProject = await createProject(projectData);
       setIsDialogOpen(false);
-      // Redirect to the new project page
       router.push(`/dashboard/projects/${newProject.id}`);
     } catch (error) {
       console.error("Failed to create project:", error);
+    } finally {
       setIsCreating(false);
     }
   };

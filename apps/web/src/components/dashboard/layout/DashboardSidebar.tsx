@@ -1,11 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/contexts/auth-context";
-
-import { api } from "@/lib/api";
-import { Project } from "@/types/project";
-
 import {
   LayoutDashboard,
   HelpCircle,
@@ -14,31 +8,12 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { useProjects } from "@/hooks/useProjects";
+
 export default function DashboardSidebar() {
-  const { user, token } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const { projects, isLoading } = useProjects();
 
   const router = useRouter();
-
-  useEffect(() => {
-    if (user && token) {
-      loadProjects();
-    }
-  }, [user, token]);
-
-  const loadProjects = async () => {
-    if (!token) return;
-
-    try {
-      const data = await api.get<Project[]>("/projects", token);
-      setProjects(data);
-    } catch (error) {
-      console.error("Failed to load projects:", error);
-    } finally {
-      setIsLoadingProjects(false);
-    }
-  };
 
   return (
     <aside className="w-64 border-r border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl flex flex-col">
@@ -57,7 +32,7 @@ export default function DashboardSidebar() {
 
           {/* Projects List - Indented */}
           <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-slate-200 dark:border-slate-700 pl-2">
-            {isLoadingProjects ? (
+            {isLoading ? (
               <div className="flex items-center gap-2 px-3 py-2 text-sm text-slate-400">
                 <div className="w-4 h-4 animate-spin rounded-full border-2 border-slate-300 border-t-transparent"></div>
                 <span>Loading...</span>

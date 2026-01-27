@@ -31,7 +31,7 @@ import {
 export default function ProjectDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const { user, token, logout, isLoading: isAuthLoading } = useAuth();
+  const { user, token, isLoading: isAuthLoading } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -227,11 +227,6 @@ export default function ProjectDetailPage() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    router.push("/");
-  };
-
   if (isAuthLoading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -245,20 +240,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navbar */}
-      <nav className="border-b">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="font-semibold text-lg">TaskFlow</div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user.email}</span>
-            <Button variant="outline" onClick={handleLogout}>
-              Logout
-            </Button>
-          </div>
-        </div>
-      </nav>
-
+    <div className="space-y-8">
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
