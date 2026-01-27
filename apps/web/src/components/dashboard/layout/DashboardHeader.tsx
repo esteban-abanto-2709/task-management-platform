@@ -1,5 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
+
 import { Search, Sparkles, LogOut, User as UserIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +17,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function DashboardHeader() {
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/60 dark:border-slate-800/60 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80">
       <div className="h-16 px-6 flex items-center justify-between gap-8">
@@ -46,14 +57,6 @@ export default function DashboardHeader() {
               variant="ghost"
               className="flex items-center gap-3 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                  John Doe
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  john@example.com
-                </p>
-              </div>
               <Avatar className="w-10 h-10">
                 <AvatarImage src="https://github.com/shadcn.png" alt="User" />
                 <AvatarFallback className="bg-linear-to-br from-blue-500 to-indigo-600 text-white">
@@ -73,7 +76,10 @@ export default function DashboardHeader() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 dark:text-red-400">
+            <DropdownMenuItem
+              className="text-red-600 dark:text-red-400 cursor-pointer"
+              onClick={handleLogout}
+            >
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

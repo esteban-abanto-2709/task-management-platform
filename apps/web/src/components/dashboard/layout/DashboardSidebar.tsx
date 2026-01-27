@@ -1,52 +1,87 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/auth-context";
+
+import { api } from "@/lib/api";
+import { Project } from "@/types/project";
+
 import {
   LayoutDashboard,
-  FolderKanban,
-  CheckSquare,
-  BarChart3,
-  Users,
-  Settings,
   HelpCircle,
   Sparkles,
+  FolderKanban,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardSidebar() {
-  const navItems = [
-    { icon: LayoutDashboard, label: "Dashboard", active: true },
-    { icon: FolderKanban, label: "Projects", active: false },
-    { icon: CheckSquare, label: "Tasks", active: false },
-    { icon: BarChart3, label: "Analytics", active: false },
-    { icon: Users, label: "Team", active: false },
-  ];
+  const { user, token } = useAuth();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
 
-  const secondaryItems = [
-    { icon: Settings, label: "Settings" },
-    { icon: HelpCircle, label: "Help & Support" },
-  ];
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && token) {
+      loadProjects();
+    }
+  }, [user, token]);
+
+  const loadProjects = async () => {
+    if (!token) return;
+
+    try {
+      const data = await api.get<Project[]>("/projects", token);
+      setProjects(data);
+    } catch (error) {
+      console.error("Failed to load projects:", error);
+    } finally {
+      setIsLoadingProjects(false);
+    }
+  };
 
   return (
     <aside className="w-64 border-r border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl flex flex-col">
       {/* Navigation Items */}
       <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
-        {/* Primary Navigation */}
+        {/* Dashboard Section */}
         <div className="space-y-1">
-          {navItems.map((item, index) => (
-            <button
-              key={index}
-              className={`
-                w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                ${
-                  item.active
-                    ? "bg-linear-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-100"
-                }
-              `}
-            >
-              <item.icon className="w-5 h-5 shrink-0" />
-              <span>{item.label}</span>
-            </button>
-          ))}
+          {/* Dashboard Button */}
+          <button
+            className="cursor-pointer w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-100 transition-all"
+            onClick={() => router.push("/dashboard")}
+          >
+            <LayoutDashboard className="w-5 h-5 shrink-0" />
+            <span>Dashboard</span>
+          </button>
+
+          {/* Projects List - Indented */}
+          <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-slate-200 dark:border-slate-700 pl-2">
+            {isLoadingProjects ? (
+              <div className="flex items-center gap-2 px-3 py-2 text-sm text-slate-400">
+                <div className="w-4 h-4 animate-spin rounded-full border-2 border-slate-300 border-t-transparent"></div>
+                <span>Loading...</span>
+              </div>
+            ) : projects.length === 0 ? (
+              <div className="flex items-center gap-2 px-3 py-2 text-sm text-slate-400">
+                <FolderKanban className="w-4 h-4 shrink-0" />
+                <span>No projects yet</span>
+              </div>
+            ) : (
+              projects.map((project) => (
+                <button
+                  key={project.id}
+                  className="cursor-pointer w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-100 transition-all"
+                  onClick={() =>
+                    router.push(`/dashboard/projects/${project.id}`)
+                  }
+                >
+                  <FolderKanban className="w-4 h-4 shrink-0 text-slate-400" />
+                  <span className="truncate">{project.name}</span>
+                </button>
+              ))
+            )}
+          </div>
         </div>
 
         {/* Divider */}
@@ -54,17 +89,15 @@ export default function DashboardSidebar() {
           <div className="h-px bg-linear-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent"></div>
         </div>
 
-        {/* Secondary Navigation */}
+        {/* Help Section */}
         <div className="space-y-1">
-          {secondaryItems.map((item, index) => (
-            <button
-              key={index}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-100 transition-all"
-            >
-              <item.icon className="w-5 h-5 shrink-0" />
-              <span>{item.label}</span>
-            </button>
-          ))}
+          <button
+            className="cursor-pointer w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-100 transition-all"
+            onClick={() => router.push("/dashboard/help")}
+          >
+            <HelpCircle className="w-5 h-5 shrink-0" />
+            <span>Help & Support</span>
+          </button>
         </div>
       </nav>
 

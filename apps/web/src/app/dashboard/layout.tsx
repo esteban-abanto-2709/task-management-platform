@@ -1,3 +1,9 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
+
 import { ReactNode } from "react";
 import DashboardHeader from "@/components/dashboard/layout/DashboardHeader";
 import DashboardSidebar from "@/components/dashboard/layout/DashboardSidebar";
@@ -8,6 +14,15 @@ export default function DashboardNewLayout({
 }: {
   children: ReactNode;
 }) {
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, isLoading, router]);
+
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       {/* Header - Full Width at Top */}
