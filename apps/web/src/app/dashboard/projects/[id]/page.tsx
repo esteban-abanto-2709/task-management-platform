@@ -16,9 +16,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { api } from "@/lib/api";
-import { Project, UpdateProjectDto } from "@/types/project";
-import { Task, TaskStatus, CreateTaskDto } from "@/types/task";
+import { UpdateProjectDto } from "@/types/project";
+import { TaskStatus, CreateTaskDto } from "@/types/task";
 import { ArrowLeft, Save, Trash2, Plus, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import {
@@ -28,13 +27,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useProject } from "@/hooks/useProject";
+import { useTasks } from "@/hooks/useTasks";
+
 export default function ProjectDetailPage() {
-  const router = useRouter();
   const params = useParams();
-  const { user, token, isLoading: isAuthLoading } = useAuth();
-  const [project, setProject] = useState<Project | null>(null);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const projectId = params.id as string;
+
+  const {
+    project,
+    isLoading: isLoadingProject,
+    updateProject,
+    deleteProject,
+  } = useProject(projectId);
+
+  const {
+    tasks,
+    isLoading: isLoadingTasks,
+    createTask,
+    updateTaskStatus,
+    deleteTask,
+  } = useTasks({ projectId });
+
+  const isLoading = isLoadingProject || isLoadingTasks;
+
+  const router = useRouter();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
@@ -49,44 +67,14 @@ export default function ProjectDetailPage() {
   }, [user, isAuthLoading, router]);
 
   useEffect(() => {
-    if (user && token) {
-      loadProject();
-      loadTasks();
+    if (project) {
+      setEditedName(project.name);
+      setEditedDescription(project.description || "");
     }
-  }, [user, token, params.id]);
-
-  const loadProject = async () => {
-    if (!token || !params.id) return;
-
-    try {
-      const data = await api.get<Project>(`/projects/${params.id}`, token);
-      setProject(data);
-      setEditedName(data.name);
-      setEditedDescription(data.description || "");
-    } catch (error) {
-      console.error("Failed to load project:", error);
-      router.push("/dashboard");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadTasks = async () => {
-    if (!token || !params.id) return;
-
-    try {
-      const data = await api.get<Task[]>(
-        `/tasks?projectId=${params.id}`,
-        token,
-      );
-      setTasks(data);
-    } catch (error) {
-      console.error("Failed to load tasks:", error);
-    }
-  };
+  }, [project]);
 
   const handleSave = async () => {
-    if (!token || !project) return;
+    if (!project) return;
 
     setIsSaving(true);
     const updateData: UpdateProjectDto = {
@@ -104,14 +92,7 @@ export default function ProjectDetailPage() {
     }
 
     try {
-      const updated = await api.patch<Project>(
-        `/projects/${project.id}`,
-        updateData,
-        token,
-      );
-      setProject(updated);
-      setEditedName(updated.name);
-      setEditedDescription(updated.description || "");
+      await updateProject(updateData);
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to update project:", error);
@@ -122,7 +103,6 @@ export default function ProjectDetailPage() {
 
   const handleDelete = async () => {
     if (
-      !token ||
       !project ||
       !confirm(
         "Are you sure you want to delete this project? This action cannot be undone.",
@@ -132,7 +112,7 @@ export default function ProjectDetailPage() {
     }
 
     try {
-      await api.delete(`/projects/${project.id}`, token);
+      await deleteProject();
       router.push("/dashboard");
     } catch (error) {
       console.error("Failed to delete project:", error);
@@ -149,7 +129,7 @@ export default function ProjectDetailPage() {
 
   const handleCreateTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!token || !project) return;
+    if (!project) return;
 
     setIsCreatingTask(true);
     const formData = new FormData(e.currentTarget);
@@ -160,8 +140,7 @@ export default function ProjectDetailPage() {
     };
 
     try {
-      const newTask = await api.post<Task>("/tasks", taskData, token);
-      setTasks([newTask, ...tasks]);
+      await createTask(taskData);
       setIsTaskDialogOpen(false);
       e.currentTarget.reset();
     } catch (error) {
@@ -175,27 +154,18 @@ export default function ProjectDetailPage() {
     taskId: string,
     newStatus: TaskStatus,
   ) => {
-    if (!token) return;
-
     try {
-      const updated = await api.patch<Task>(
-        `/tasks/${taskId}`,
-        { status: newStatus },
-        token,
-      );
-      setTasks(tasks.map((t) => (t.id === taskId ? updated : t)));
+      await updateTaskStatus(taskId, newStatus);
     } catch (error) {
       console.error("Failed to update task:", error);
     }
   };
 
   const handleDeleteTask = async (taskId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this task?"))
-      return;
+    if (!confirm("Are you sure you want to delete this task?")) return;
 
     try {
-      await api.delete(`/tasks/${taskId}`, token);
-      setTasks(tasks.filter((t) => t.id !== taskId));
+      await deleteTask(taskId);
     } catch (error) {
       console.error("Failed to delete task:", error);
     }

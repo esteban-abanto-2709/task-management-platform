@@ -1,0 +1,98 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { api } from "@/lib/api";
+import { Task, CreateTaskDto, UpdateTaskDto, TaskStatus } from "@/types/task";
+
+interface UseTasksOptions {
+  projectId?: string;
+  autoLoad?: boolean;
+}
+
+export function useTasks(options: UseTasksOptions = {}) {
+  const { projectId, autoLoad = true } = options;
+  const { token } = useAuth();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Cargar tareas
+  const loadTasks = useCallback(async () => {
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      const endpoint = projectId ? `/tasks?projectId=${projectId}` : "/tasks";
+      const data = await api.get<Task[]>(endpoint, token);
+      setTasks(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load tasks");
+      console.error("Failed to load tasks:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token, projectId]);
+
+  // Cargar al montar si autoLoad está activado
+  useEffect(() => {
+    if (autoLoad) {
+      loadTasks();
+    }
+  }, [loadTasks, autoLoad]);
+
+  // Crear tarea
+  const createTask = async (data: CreateTaskDto): Promise<Task> => {
+    if (!token) throw new Error("No authentication token");
+
+    const newTask = await api.post<Task>("/tasks", data, token);
+    setTasks((prev) => [newTask, ...prev]);
+    return newTask;
+  };
+
+  // Actualizar tarea
+  const updateTask = async (id: string, data: UpdateTaskDto): Promise<Task> => {
+    if (!token) throw new Error("No authentication token");
+
+    const updated = await api.patch<Task>(`/tasks/${id}`, data, token);
+    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+    return updated;
+  };
+
+  // Actualizar solo el status (helper común)
+  const updateTaskStatus = async (
+    id: string,
+    status: TaskStatus,
+  ): Promise<Task> => {
+    return updateTask(id, { status });
+  };
+
+  // Eliminar tarea
+  const deleteTask = async (id: string): Promise<void> => {
+    if (!token) throw new Error("No authentication token");
+
+    await api.delete(`/tasks/${id}`, token);
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  // Obtener una tarea por ID (del cache)
+  const getTaskById = (id: string): Task | undefined => {
+    return tasks.find((t) => t.id === id);
+  };
+
+  return {
+    tasks,
+    isLoading,
+    error,
+    loadTasks,
+    createTask,
+    updateTask,
+    updateTaskStatus,
+    deleteTask,
+    getTaskById,
+  };
+}
