@@ -45,6 +45,34 @@ export function useTasks(options: UseTasksOptions = {}) {
     }
   }, [loadTasks, autoLoad]);
 
+  // Obtener una tarea específica desde la API
+  const getTask = useCallback(
+    async (id: string): Promise<Task> => {
+      if (!token) throw new Error("No authentication token");
+
+      try {
+        setIsLoading(true);
+        setError(null);
+        const task = await api.get<Task>(`/tasks/${id}`, token);
+        // Actualizar en el cache si existe
+        setTasks((prev) => {
+          const exists = prev.find((t) => t.id === id);
+          if (exists) {
+            return prev.map((t) => (t.id === id ? task : t));
+          }
+          return [task, ...prev];
+        });
+        return task;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load task");
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [token],
+  );
+
   // Crear tarea
   const createTask = async (data: CreateTaskDto): Promise<Task> => {
     if (!token) throw new Error("No authentication token");
@@ -89,6 +117,7 @@ export function useTasks(options: UseTasksOptions = {}) {
     isLoading,
     error,
     loadTasks,
+    getTask,
     createTask,
     updateTask,
     updateTaskStatus,

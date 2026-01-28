@@ -72,7 +72,7 @@ export default function ProjectDetailPage() {
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
-      router.push("/login");
+      router.push(routes.login());
     }
   }, [user, isAuthLoading, router]);
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Edit2, Trash2, Save } from "lucide-react";
 
 import { useAuth } from "@/contexts/auth-context";
-import { api } from "@/lib/api";
+import { useTasks } from "@/hooks/useTasks";
 import { Task, TaskStatus, UpdateTaskDto } from "@/types/task";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,11 +28,18 @@ export default function TaskDetailPage() {
   const taskId = params.taskId as string;
 
   const router = useRouter();
-  const { user, token, isLoading: isAuthLoading } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
+
+  // Use the useTasks hook with autoLoad disabled
+  const {
+    getTask,
+    updateTask,
+    deleteTask,
+    isLoading: isTaskLoading,
+    error: taskError,
+  } = useTasks({ autoLoad: false });
 
   const [task, setTask] = useState<Task | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -41,37 +48,36 @@ export default function TaskDetailPage() {
   const [editedDescription, setEditedDescription] = useState("");
   const [editedStatus, setEditedStatus] = useState<TaskStatus>(TaskStatus.OPEN);
 
+  // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthLoading && !user) {
-      router.push("/login");
-      return;
+      router.push(routes.login());
     }
+  }, [user, isAuthLoading, router]);
 
+  // Load task data
+  useEffect(() => {
     const fetchTask = async () => {
-      if (!token || !taskId) return;
+      if (!user || !taskId) return;
 
       try {
-        setIsLoading(true);
-        const data = await api.get<Task>(`/tasks/${taskId}`, token);
+        const data = await getTask(taskId);
         setTask(data);
         setEditedTitle(data.title);
         setEditedDescription(data.description || "");
         setEditedStatus(data.status);
       } catch (err) {
         console.error("Failed to fetch task:", err);
-        setError("Failed to load task details");
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    if (user && token) {
+    if (user && taskId) {
       fetchTask();
     }
-  }, [user, token, isAuthLoading, router, taskId]);
+  }, [user, taskId, getTask]);
 
   const handleSave = async () => {
-    if (!task || !token) return;
+    if (!task) return;
 
     setIsSaving(true);
     const updateData: UpdateTaskDto = {
@@ -89,11 +95,7 @@ export default function TaskDetailPage() {
     }
 
     try {
-      const updated = await api.patch<Task>(
-        `/tasks/${task.id}`,
-        updateData,
-        token,
-      );
+      const updated = await updateTask(task.id, updateData);
       setTask(updated);
       setIsEditing(false);
     } catch (error) {
@@ -113,16 +115,12 @@ export default function TaskDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (
-      !task ||
-      !token ||
-      !confirm("Are you sure you want to delete this task?")
-    ) {
+    if (!task || !confirm("Are you sure you want to delete this task?")) {
       return;
     }
 
     try {
-      await api.delete(`/tasks/${task.id}`, token);
+      await deleteTask(task.id);
       router.push(routes.project(projectId));
     } catch (error) {
       console.error("Failed to delete task:", error);
@@ -155,7 +153,7 @@ export default function TaskDetailPage() {
     }
   };
 
-  if (isAuthLoading || isLoading) {
+  if (isAuthLoading || isTaskLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-muted-foreground">Loading...</div>
@@ -163,7 +161,7 @@ export default function TaskDetailPage() {
     );
   }
 
-  if (error || !task) {
+  if (taskError || !task) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Button variant="ghost" asChild className="mb-4">
@@ -173,7 +171,7 @@ export default function TaskDetailPage() {
           </Link>
         </Button>
         <div className="text-center text-destructive">
-          {error || "Task not found"}
+          {taskError || "Task not found"}
         </div>
       </div>
     );
@@ -234,9 +232,6 @@ export default function TaskDetailPage() {
                         <Badge variant={getStatusBadgeVariant(task.status)}>
                           {getStatusLabel(task.status)}
                         </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          ID: {task.id}
-                        </span>
                       </div>
                     </div>
                   </>
