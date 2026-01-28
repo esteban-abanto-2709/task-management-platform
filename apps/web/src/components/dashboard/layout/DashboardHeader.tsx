@@ -31,10 +31,10 @@ export default function DashboardHeader() {
       <div className="h-16 px-6 flex items-center justify-between gap-8">
         {/* Logo - Left */}
         <div className="flex items-center gap-2 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
             <Sparkles className="w-5 h-5 text-primary-foreground" />
           </div>
-          <h1 className="font-bold text-xl bg-linear-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+          <h1 className="font-bold text-xl bg-primary bg-clip-text text-transparent">
             TaskFlow
           </h1>
         </div>
@@ -59,8 +59,8 @@ export default function DashboardHeader() {
               className="flex items-center gap-3 hover:bg-accent"
             >
               <Avatar className="w-10 h-10">
-                <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                <AvatarFallback className="bg-linear-to-br from-primary to-primary/80 text-primary-foreground">
+                <AvatarImage src="https://github.com/shadcn.pn" alt="User" />
+                <AvatarFallback className="bg-primary text-primary-foreground">
                   <UserIcon className="w-5 h-5" />
                 </AvatarFallback>
               </Avatar>

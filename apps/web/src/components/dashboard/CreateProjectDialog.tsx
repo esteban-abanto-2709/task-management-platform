@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { CreateProjectDto } from "@/types/project";
 import { useProjects } from "@/hooks/useProjects";
+import { useDialogState } from "@/hooks/useDialogState";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,7 +23,7 @@ import { routes } from "@/lib/routes";
 export function CreateProjectDialog() {
   const router = useRouter();
   const { createProject } = useProjects();
-  const [open, setOpen] = useState(false);
+  const dialog = useDialogState();
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateProject = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,7 +38,7 @@ export function CreateProjectDialog() {
 
     try {
       const newProject = await createProject(projectData);
-      setOpen(false);
+      dialog.close();
       router.push(routes.project(newProject.id));
     } catch (error) {
       console.error("Failed to create project:", error);
@@ -47,7 +48,7 @@ export function CreateProjectDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={dialog.isOpen} onOpenChange={dialog.setIsOpen}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="w-4 h-4 mr-2" />
@@ -85,7 +86,7 @@ export function CreateProjectDialog() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={dialog.close}
               disabled={isCreating}
             >
               Cancel

@@ -30,13 +30,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UpdateProjectDto } from "@/types/project";
-import { TaskStatus, CreateTaskDto } from "@/types/task";
+import { CreateTaskDto, TaskStatus } from "@/types/task";
 import { ArrowLeft, Save, Trash2, Plus } from "lucide-react";
 import Link from "next/link";
 
 import { useProjects } from "@/hooks/useProjects";
 import { useTasks } from "@/hooks/useTasks";
+import { useProjectEditor } from "@/hooks/useProjectEditor";
+import { useDialogState } from "@/hooks/useDialogState";
 import { routes } from "@/lib/routes";
 
 export default function ProjectDetailPage() {
@@ -63,11 +64,15 @@ export default function ProjectDetailPage() {
 
   const router = useRouter();
   const { user, isLoading: isAuthLoading } = useAuth();
-  const [isSaving, setIsSaving] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState("");
-  const [editedDescription, setEditedDescription] = useState("");
-  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+
+  // ✨ Usar el hook de edición
+  const editor = useProjectEditor({
+    project,
+    onUpdate: updateProject,
+  });
+
+  // ✨ Usar el hook de diálogo
+  const taskDialog = useDialogState();
   const [isCreatingTask, setIsCreatingTask] = useState(false);
 
   useEffect(() => {
@@ -75,41 +80,6 @@ export default function ProjectDetailPage() {
       router.push(routes.login());
     }
   }, [user, isAuthLoading, router]);
-
-  useEffect(() => {
-    if (project) {
-      setEditedName(project.name);
-      setEditedDescription(project.description || "");
-    }
-  }, [project]);
-
-  const handleSave = async () => {
-    if (!project) return;
-
-    setIsSaving(true);
-    const updateData: UpdateProjectDto = {
-      name: editedName !== project.name ? editedName : undefined,
-      description:
-        editedDescription !== project.description
-          ? editedDescription
-          : undefined,
-    };
-
-    if (!updateData.name && !updateData.description) {
-      setIsEditing(false);
-      setIsSaving(false);
-      return;
-    }
-
-    try {
-      await updateProject(project.id, updateData);
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Failed to update project:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   const handleDelete = async () => {
     if (
@@ -129,14 +99,6 @@ export default function ProjectDetailPage() {
     }
   };
 
-  const handleCancel = () => {
-    if (project) {
-      setEditedName(project.name);
-      setEditedDescription(project.description || "");
-    }
-    setIsEditing(false);
-  };
-
   const handleCreateTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!project) return;
@@ -151,7 +113,7 @@ export default function ProjectDetailPage() {
 
     try {
       await createTask(taskData);
-      setIsTaskDialogOpen(false);
+      taskDialog.close();
       e.currentTarget.reset();
     } catch (error) {
       console.error("Failed to create task:", error);
@@ -198,35 +160,42 @@ export default function ProjectDetailPage() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-4">
-                  {isEditing ? (
+                  {editor.isEditing ? (
                     <>
                       <div className="space-y-2">
                         <Input
-                          value={editedName}
-                          onChange={(e) => setEditedName(e.target.value)}
+                          value={editor.editedData.name}
+                          onChange={(e) =>
+                            editor.handleChange("name", e.target.value)
+                          }
                           placeholder="Project name"
                           className="text-2xl font-bold"
-                          disabled={isSaving}
+                          disabled={editor.isSaving}
                         />
                       </div>
                       <div className="space-y-2">
                         <Textarea
-                          value={editedDescription}
-                          onChange={(e) => setEditedDescription(e.target.value)}
+                          value={editor.editedData.description}
+                          onChange={(e) =>
+                            editor.handleChange("description", e.target.value)
+                          }
                           placeholder="Project description (optional)"
                           rows={3}
-                          disabled={isSaving}
+                          disabled={editor.isSaving}
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Button onClick={handleSave} disabled={isSaving}>
+                        <Button
+                          onClick={editor.handleSave}
+                          disabled={editor.isSaving}
+                        >
                           <Save className="w-4 h-4 mr-2" />
-                          {isSaving ? "Saving..." : "Save Changes"}
+                          {editor.isSaving ? "Saving..." : "Save Changes"}
                         </Button>
                         <Button
                           variant="outline"
-                          onClick={handleCancel}
-                          disabled={isSaving}
+                          onClick={editor.handleCancel}
+                          disabled={editor.isSaving}
                         >
                           Cancel
                         </Button>
@@ -239,10 +208,7 @@ export default function ProjectDetailPage() {
                         {project.description || "No description"}
                       </p>
                       <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => setIsEditing(true)}
-                        >
+                        <Button variant="outline" onClick={editor.startEditing}>
                           Edit Project
                         </Button>
                         <Button variant="destructive" onClick={handleDelete}>
@@ -277,8 +243,8 @@ export default function ProjectDetailPage() {
                   Tasks ({tasks.length})
                 </CardTitle>
                 <Dialog
-                  open={isTaskDialogOpen}
-                  onOpenChange={setIsTaskDialogOpen}
+                  open={taskDialog.isOpen}
+                  onOpenChange={taskDialog.setIsOpen}
                 >
                   <DialogTrigger asChild>
                     <Button>
@@ -315,7 +281,7 @@ export default function ProjectDetailPage() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => setIsTaskDialogOpen(false)}
+                          onClick={taskDialog.close}
                           disabled={isCreatingTask}
                         >
                           Cancel
@@ -335,7 +301,7 @@ export default function ProjectDetailPage() {
                   <p className="text-muted-foreground mb-4">
                     No tasks yet. Create your first task to get started!
                   </p>
-                  <Button onClick={() => setIsTaskDialogOpen(true)}>
+                  <Button onClick={taskDialog.open}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create Task
                   </Button>
