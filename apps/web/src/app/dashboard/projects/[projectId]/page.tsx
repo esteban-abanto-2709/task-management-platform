@@ -359,11 +359,6 @@ export default function ProjectDetailPage() {
                             >
                               {task.title}
                             </Link>
-                            {task.description && (
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                {task.description}
-                              </p>
-                            )}
                           </div>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
