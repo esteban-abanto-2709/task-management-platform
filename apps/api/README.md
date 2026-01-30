@@ -1,98 +1,964 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚀 TaskFlow API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A robust REST API built with NestJS, Prisma, and PostgreSQL for managing projects and tasks with user authentication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Table of Contents
 
-## Description
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [Environment Variables](#-environment-variables)
+- [Running the Application](#-running-the-application)
+- [API Documentation](#-api-documentation)
+- [Error Handling](#-error-handling)
+- [Docker Support](#-docker-support)
+- [License](#-license)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## ✨ Features
 
-## Project setup
+- 🔐 **JWT Authentication** - Secure user registration and login
+- 👤 **User Management** - User profiles and authentication
+- 📁 **Project Management** - CRUD operations for projects
+- ✅ **Task Management** - CRUD operations with status workflow (OPEN → IN_PROGRESS → DONE)
+- 🔒 **Authorization** - Role-based access control for resources
+- ✅ **Input Validation** - Comprehensive DTO validation with class-validator
+- 🚨 **Error Handling** - Consistent error responses across all endpoints
+- 🗄️ **PostgreSQL** - Robust relational database with Prisma ORM
+- 🐳 **Docker Ready** - Containerized deployment with Docker
 
-```bash
-$ npm install
-```
+## 🛠 Tech Stack
 
-## Compile and run the project
+- **Framework:** [NestJS](https://nestjs.com/) v11
+- **Database:** [PostgreSQL](https://www.postgresql.org/)
+- **ORM:** [Prisma](https://www.prisma.io/) v7
+- **Authentication:** JWT (JSON Web Tokens)
+- **Validation:** class-validator & class-transformer
+- **Password Hashing:** bcrypt
+- **Runtime:** Node.js 20+
 
-```bash
-# development
-$ npm run start
+## 📦 Prerequisites
 
-# watch mode
-$ npm run start:dev
+Before you begin, ensure you have the following installed:
 
-# production mode
-$ npm run start:prod
-```
+- **Node.js** >= 20.x
+- **npm** >= 10.x
+- **PostgreSQL** >= 14.x
+- **Docker** (optional, for containerized deployment)
 
-## Run tests
+## 🚀 Installation
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+1. **Clone the repository**
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+git clone <repository-url>
+cd apps/api
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+2. **Install dependencies**
 
-## Resources
+```bash
+npm install
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+3. **Set up environment variables**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Copy the `.env.example` file to `.env`:
 
-## Support
+```bash
+cp .env.example .env
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+4. **Configure your `.env` file** (see [Environment Variables](#-environment-variables))
 
-## Stay in touch
+5. **Run database migrations**
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npx prisma migrate dev
+```
 
-## License
+6. **Generate Prisma Client**
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+npx prisma generate
+```
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Server Configuration
+PORT=4000
+
+# Database Configuration
+# Format: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+DATABASE_URL="postgresql://user:password@localhost:5432/taskflow?schema=public"
+
+# JWT Configuration
+# ⚠️ CRITICAL: Use a strong, randomly generated secret in production
+# Generate one with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
+```
+
+### ⚠️ Security Warning
+
+**IMPORTANT:** The application will show a warning in the console if you're using the default JWT secret:
+
+```
+⚠️  WARNING: Using default JWT_SECRET!
+⚠️  Generate a secure secret with:
+⚠️  node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+**Never use the default JWT secret in production!** Generate a secure random secret using:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+### Required Environment Variables
+
+| Variable       | Description                  | Required | Default               |
+| -------------- | ---------------------------- | -------- | --------------------- |
+| `PORT`         | Server port                  | No       | `4000`                |
+| `DATABASE_URL` | PostgreSQL connection string | **Yes**  | -                     |
+| `JWT_SECRET`   | Secret key for JWT tokens    | **Yes**  | ⚠️ Default (insecure) |
+
+### Validation
+
+The application validates that all required environment variables are present on startup. If any are missing, the application will:
+
+1. Log an error message indicating which variables are missing
+2. Exit with a non-zero status code
+3. Prevent the server from starting
+
+## 🏃 Running the Application
+
+### Development Mode
+
+```bash
+npm run start:dev
+```
+
+The server will start on `http://localhost:4000` with hot-reload enabled.
+
+### Production Mode
+
+```bash
+# Build the application
+npm run build
+
+# Start the production server
+npm run start:prod
+```
+
+### Docker
+
+```bash
+# Build the Docker image
+docker build -t taskflow-api .
+
+# Run the container
+docker run -p 4000:4000 --env-file .env taskflow-api
+```
+
+## 📚 API Documentation
+
+Base URL: `http://localhost:4000`
+
+### Authentication
+
+All protected endpoints require a JWT token in the `Authorization` header:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+---
+
+### 🔓 Public Endpoints
+
+#### Register User
+
+Create a new user account.
+
+**Endpoint:** `POST /auth/register`
+
+**Request Body:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "John Doe" // optional
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "createdAt": "2025-01-29T10:00:00.000Z",
+    "updatedAt": "2025-01-29T10:00:00.000Z"
+  },
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Validation Rules:**
+
+- `email`: Must be a valid email address (required)
+- `password`: Minimum 6 characters (required)
+- `name`: Optional string
+
+**Error Responses:**
+
+- `400 Bad Request` - Validation errors
+- `409 Conflict` - Email already exists
+
+---
+
+#### Login
+
+Authenticate and receive a JWT token.
+
+**Endpoint:** `POST /auth/login`
+
+**Request Body:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "createdAt": "2025-01-29T10:00:00.000Z",
+    "updatedAt": "2025-01-29T10:00:00.000Z"
+  },
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Error Responses:**
+
+- `400 Bad Request` - Validation errors
+- `401 Unauthorized` - Invalid credentials
+
+---
+
+### 🔒 Protected Endpoints
+
+#### Get Current User
+
+Get the authenticated user's profile.
+
+**Endpoint:** `GET /auth/me`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "uuid",
+  "email": "user@example.com",
+  "name": "John Doe",
+  "createdAt": "2025-01-29T10:00:00.000Z",
+  "updatedAt": "2025-01-29T10:00:00.000Z"
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized` - Missing or invalid token
+
+---
+
+### 📁 Projects
+
+#### Create Project
+
+Create a new project.
+
+**Endpoint:** `POST /projects`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+
+```json
+{
+  "name": "My Project",
+  "description": "Project description" // optional
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "id": "uuid",
+  "name": "My Project",
+  "description": "Project description",
+  "userId": "uuid",
+  "createdAt": "2025-01-29T10:00:00.000Z",
+  "updatedAt": "2025-01-29T10:00:00.000Z"
+}
+```
+
+**Validation Rules:**
+
+- `name`: Non-empty string (required)
+- `description`: Optional string
+
+**Error Responses:**
+
+- `400 Bad Request` - Validation errors
+- `401 Unauthorized` - Missing or invalid token
+
+---
+
+#### Get All Projects
+
+Get all projects belonging to the authenticated user.
+
+**Endpoint:** `GET /projects`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response:** `200 OK`
+
+```json
+[
+  {
+    "id": "uuid",
+    "name": "Project 1",
+    "description": "Description",
+    "userId": "uuid",
+    "createdAt": "2025-01-29T10:00:00.000Z",
+    "updatedAt": "2025-01-29T10:00:00.000Z"
+  },
+  {
+    "id": "uuid",
+    "name": "Project 2",
+    "description": null,
+    "userId": "uuid",
+    "createdAt": "2025-01-29T09:00:00.000Z",
+    "updatedAt": "2025-01-29T09:00:00.000Z"
+  }
+]
+```
+
+**Error Responses:**
+
+- `401 Unauthorized` - Missing or invalid token
+
+---
+
+#### Get Project by ID
+
+Get a specific project by ID.
+
+**Endpoint:** `GET /projects/:id`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "uuid",
+  "name": "My Project",
+  "description": "Project description",
+  "userId": "uuid",
+  "createdAt": "2025-01-29T10:00:00.000Z",
+  "updatedAt": "2025-01-29T10:00:00.000Z"
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized` - Missing or invalid token
+- `403 Forbidden` - Project belongs to another user
+- `404 Not Found` - Project does not exist
+
+---
+
+#### Update Project
+
+Update a project.
+
+**Endpoint:** `PATCH /projects/:id`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+
+```json
+{
+  "name": "Updated Name", // optional
+  "description": "Updated description" // optional
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "uuid",
+  "name": "Updated Name",
+  "description": "Updated description",
+  "userId": "uuid",
+  "createdAt": "2025-01-29T10:00:00.000Z",
+  "updatedAt": "2025-01-29T10:30:00.000Z"
+}
+```
+
+**Error Responses:**
+
+- `400 Bad Request` - Validation errors
+- `401 Unauthorized` - Missing or invalid token
+- `403 Forbidden` - Project belongs to another user
+- `404 Not Found` - Project does not exist
+
+---
+
+#### Delete Project
+
+Delete a project and all its tasks.
+
+**Endpoint:** `DELETE /projects/:id`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "uuid",
+  "name": "My Project",
+  "description": "Project description",
+  "userId": "uuid",
+  "createdAt": "2025-01-29T10:00:00.000Z",
+  "updatedAt": "2025-01-29T10:00:00.000Z"
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized` - Missing or invalid token
+- `403 Forbidden` - Project belongs to another user
+- `404 Not Found` - Project does not exist
+
+---
+
+### ✅ Tasks
+
+#### Create Task
+
+Create a new task in a project.
+
+**Endpoint:** `POST /tasks`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+
+```json
+{
+  "title": "My Task",
+  "description": "Task description", // optional
+  "projectId": "uuid", // required
+  "status": "OPEN" // optional, default: OPEN
+}
+```
+
+**Status Options:**
+
+- `OPEN` (default)
+- `IN_PROGRESS`
+- `DONE`
+
+**Response:** `201 Created`
+
+```json
+{
+  "id": "uuid",
+  "title": "My Task",
+  "description": "Task description",
+  "status": "OPEN",
+  "projectId": "uuid",
+  "createdAt": "2025-01-29T10:00:00.000Z",
+  "updatedAt": "2025-01-29T10:00:00.000Z",
+  "project": {
+    "id": "uuid",
+    "name": "My Project",
+    "description": "Project description",
+    "userId": "uuid",
+    "createdAt": "2025-01-29T09:00:00.000Z",
+    "updatedAt": "2025-01-29T09:00:00.000Z"
+  }
+}
+```
+
+**Validation Rules:**
+
+- `title`: Non-empty string (required)
+- `description`: Optional string
+- `projectId`: Valid UUID (required)
+- `status`: Must be one of: `OPEN`, `IN_PROGRESS`, `DONE` (optional)
+
+**Error Responses:**
+
+- `400 Bad Request` - Validation errors
+- `401 Unauthorized` - Missing or invalid token
+- `403 Forbidden` - Project belongs to another user
+- `404 Not Found` - Project does not exist
+
+---
+
+#### Get All Tasks
+
+Get all tasks belonging to the authenticated user's projects.
+
+**Endpoint:** `GET /tasks`
+
+**Query Parameters:**
+
+- `projectId` (optional): Filter tasks by project ID
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Examples:**
+
+```bash
+# Get all tasks
+GET /tasks
+
+# Get tasks for a specific project
+GET /tasks?projectId=uuid
+```
+
+**Response:** `200 OK`
+
+```json
+[
+  {
+    "id": "uuid",
+    "title": "Task 1",
+    "description": "Description",
+    "status": "OPEN",
+    "projectId": "uuid",
+    "createdAt": "2025-01-29T10:00:00.000Z",
+    "updatedAt": "2025-01-29T10:00:00.000Z",
+    "project": {
+      "id": "uuid",
+      "name": "My Project"
+    }
+  },
+  {
+    "id": "uuid",
+    "title": "Task 2",
+    "description": null,
+    "status": "IN_PROGRESS",
+    "projectId": "uuid",
+    "createdAt": "2025-01-29T09:00:00.000Z",
+    "updatedAt": "2025-01-29T09:30:00.000Z",
+    "project": {
+      "id": "uuid",
+      "name": "My Project"
+    }
+  }
+]
+```
+
+**Error Responses:**
+
+- `401 Unauthorized` - Missing or invalid token
+
+---
+
+#### Get Task by ID
+
+Get a specific task by ID.
+
+**Endpoint:** `GET /tasks/:id`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "uuid",
+  "title": "My Task",
+  "description": "Task description",
+  "status": "OPEN",
+  "projectId": "uuid",
+  "createdAt": "2025-01-29T10:00:00.000Z",
+  "updatedAt": "2025-01-29T10:00:00.000Z",
+  "project": {
+    "id": "uuid",
+    "name": "My Project",
+    "description": "Project description",
+    "userId": "uuid",
+    "createdAt": "2025-01-29T09:00:00.000Z",
+    "updatedAt": "2025-01-29T09:00:00.000Z"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized` - Missing or invalid token
+- `403 Forbidden` - Task belongs to another user
+- `404 Not Found` - Task does not exist
+
+---
+
+#### Update Task
+
+Update a task.
+
+**Endpoint:** `PATCH /tasks/:id`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+
+```json
+{
+  "title": "Updated Title", // optional
+  "description": "Updated description", // optional
+  "status": "IN_PROGRESS" // optional
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "uuid",
+  "title": "Updated Title",
+  "description": "Updated description",
+  "status": "IN_PROGRESS",
+  "projectId": "uuid",
+  "createdAt": "2025-01-29T10:00:00.000Z",
+  "updatedAt": "2025-01-29T10:30:00.000Z"
+}
+```
+
+**Error Responses:**
+
+- `400 Bad Request` - Validation errors
+- `401 Unauthorized` - Missing or invalid token
+- `403 Forbidden` - Task belongs to another user
+- `404 Not Found` - Task does not exist
+
+---
+
+#### Delete Task
+
+Delete a task.
+
+**Endpoint:** `DELETE /tasks/:id`
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "uuid",
+  "title": "My Task",
+  "description": "Task description",
+  "status": "OPEN",
+  "projectId": "uuid",
+  "createdAt": "2025-01-29T10:00:00.000Z",
+  "updatedAt": "2025-01-29T10:00:00.000Z"
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized` - Missing or invalid token
+- `403 Forbidden` - Task belongs to another user
+- `404 Not Found` - Task does not exist
+
+---
+
+### 🏥 Health Check
+
+#### Get Health Status
+
+Check the API health and database connection.
+
+**Endpoint:** `GET /health`
+
+**Response:** `200 OK`
+
+```json
+{
+  "status": "ok",
+  "version": "0.0.1",
+  "uptime": "3600s",
+  "timestamp": "2025-01-29T10:00:00.000Z",
+  "service": "TaskFlow API",
+  "database": {
+    "status": "connected",
+    "type": "PostgreSQL"
+  }
+}
+```
+
+**Response (Database Error):** `503 Service Unavailable`
+
+```json
+{
+  "status": "error",
+  "version": "0.0.1",
+  "uptime": "3600s",
+  "timestamp": "2025-01-29T10:00:00.000Z",
+  "service": "TaskFlow API",
+  "database": {
+    "status": "disconnected",
+    "error": "Connection error message"
+  },
+  "statusCode": 503
+}
+```
+
+---
+
+## 🚨 Error Handling
+
+All errors follow a consistent JSON response format:
+
+```json
+{
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "timestamp": "2025-01-29T10:30:00.000Z",
+  "path": "/api/endpoint"
+}
+```
+
+### HTTP Status Codes
+
+| Code  | Description           | Use Cases                                        |
+| ----- | --------------------- | ------------------------------------------------ |
+| `400` | Bad Request           | Validation errors, malformed requests            |
+| `401` | Unauthorized          | Missing/invalid authentication token             |
+| `403` | Forbidden             | Accessing resources owned by other users         |
+| `404` | Not Found             | Resource does not exist                          |
+| `409` | Conflict              | Duplicate resources (e.g., email already exists) |
+| `500` | Internal Server Error | Unexpected server errors                         |
+
+### Validation Error Example
+
+```json
+{
+  "statusCode": 400,
+  "error": "Validation Error",
+  "message": "Input validation failed",
+  "details": [
+    {
+      "field": "email",
+      "errors": ["email must be an email"]
+    },
+    {
+      "field": "password",
+      "errors": ["password must be longer than or equal to 6 characters"]
+    }
+  ],
+  "timestamp": "2025-01-29T10:30:00.000Z",
+  "path": "/auth/register"
+}
+```
+
+For detailed error handling documentation, see [ERROR_HANDLING.md](docs/ERROR_HANDLING.md).
+
+---
+
+## 🐳 Docker Support
+
+### Build the Docker Image
+
+```bash
+docker build -t taskflow-api .
+```
+
+### Run the Container
+
+```bash
+docker run -p 4000:4000 --env-file .env taskflow-api
+```
+
+### Docker Compose (Optional)
+
+Create a `docker-compose.yml` file:
+
+```yaml
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - '4000:4000'
+    environment:
+      - PORT=4000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=taskflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+```
+
+Run with Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+---
+
+## 🧪 Testing
+
+The `test/` directory contains HTTP test files for all endpoints:
+
+- `auth.test.http` - Authentication endpoints
+- `projects.test.http` - Project CRUD operations
+- `tasks.test.http` - Task CRUD operations
+- `error-handling.test.http` - Error scenarios
+- `health.test.http` - Health check
+
+### Using VS Code REST Client
+
+1. Install the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension
+2. Open any `.http` file
+3. Click "Send Request" above each test case
+
+### Running Tests
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
+```
+
+---
+
+## 📝 Development Notes
+
+### Database Migrations
+
+```bash
+# Create a new migration
+npx prisma migrate dev --name migration_name
+
+# Apply migrations in production
+npx prisma migrate deploy
+
+# Reset database (development only)
+npx prisma migrate reset
+```
+
+### Prisma Studio
+
+Open Prisma Studio to view and edit data:
+
+```bash
+npx prisma studio
+```
+
+### Code Quality
+
+```bash
+# Format code
+npm run format
+
+# Lint code
+npm run lint
+```
+
+---
+
+**Built with ❤️ using NestJS, Prisma, and PostgreSQL**
