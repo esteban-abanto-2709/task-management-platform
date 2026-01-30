@@ -1,15 +1,15 @@
-import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  ResourceNotFoundException,
+  UnauthorizedResourceException,
+} from '../../common/exceptions/custom-exceptions';
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(createTaskDto: CreateTaskDto, userId: string) {
     // 1. Validate Project Ownership
@@ -18,13 +18,11 @@ export class TasksService {
     });
 
     if (!project) {
-      throw new NotFoundException('Project not found');
+      throw new ResourceNotFoundException('Project', createTaskDto.projectId);
     }
 
     if (project.userId !== userId) {
-      throw new ForbiddenException(
-        'You do not have permission to add tasks to this project',
-      );
+      throw new UnauthorizedResourceException('project');
     }
 
     // 2. Create Task
@@ -74,11 +72,11 @@ export class TasksService {
     });
 
     if (!task) {
-      throw new NotFoundException('Task not found');
+      throw new ResourceNotFoundException('Task', id);
     }
 
     if (task.project.userId !== userId) {
-      throw new ForbiddenException('You cannot access this task');
+      throw new UnauthorizedResourceException('task');
     }
 
     return task;

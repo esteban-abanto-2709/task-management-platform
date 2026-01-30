@@ -1,25 +1,26 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { DuplicateResourceException } from '../../common/exceptions/custom-exceptions';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) { }
 
   async create(email: string, password: string, name?: string) {
-    // Verificar si el usuario ya existe
+    // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      throw new ConflictException('Email already exists');
+      throw new DuplicateResourceException('User', 'email');
     }
 
-    // Hashear la contraseña
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Crear el usuario
+    // Create the user
     const user = await this.prisma.user.create({
       data: {
         email,
@@ -28,7 +29,7 @@ export class UsersService {
       },
     });
 
-    // Retornar usuario sin la contraseña
+    // Return user without password
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
@@ -48,7 +49,7 @@ export class UsersService {
       return null;
     }
 
-    // Retornar sin la contraseña
+    // Return without password
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }

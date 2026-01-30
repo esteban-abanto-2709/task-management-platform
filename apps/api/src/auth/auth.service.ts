@@ -14,10 +14,10 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const { email, password, name } = registerDto;
 
-    // Crear el usuario
+    // Create the user (will throw DuplicateResourceException if email exists)
     const user = await this.usersService.create(email, password, name);
 
-    // Generar JWT
+    // Generate JWT
     const payload = { sub: user.id, email: user.email };
     const access_token = await this.jwtService.signAsync(payload);
 
@@ -30,28 +30,28 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
-    // Buscar usuario
+    // Find user
     const user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid email or password');
     }
 
-    // Validar contraseña
+    // Validate password
     const isPasswordValid = await this.usersService.validatePassword(
       password,
       user.password,
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid email or password');
     }
 
-    // Generar JWT
+    // Generate JWT
     const payload = { sub: user.id, email: user.email };
     const access_token = await this.jwtService.signAsync(payload);
 
-    // Retornar sin la contraseña
+    // Return without password
     const { password: _, ...userWithoutPassword } = user;
 
     return {
@@ -61,6 +61,12 @@ export class AuthService {
   }
 
   async validateUser(userId: string) {
-    return this.usersService.findById(userId);
+    const user = await this.usersService.findById(userId);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+
+    return user;
   }
 }

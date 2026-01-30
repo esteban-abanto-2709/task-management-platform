@@ -1,0 +1,265 @@
+@baseUrl = http://localhost:4000
+@token = your-valid-token-here
+@invalidToken = invalid-token-xyz
+@invalidId = 00000000-0000-0000-0000-000000000000
+
+### ========================================
+### 1. AUTHENTICATION ERROR TESTS
+### ========================================
+
+### 1.1 Register - Duplicate Email (409 Conflict)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "existing@example.com",
+  "password": "password123",
+  "name": "Test User"
+}
+
+### 1.2 Register - Validation Error - Missing Required Field (400 Bad Request)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### 1.3 Register - Validation Error - Invalid Email Format (400 Bad Request)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": "password123"
+}
+
+### 1.4 Register - Validation Error - Password Too Short (400 Bad Request)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "12345"
+}
+
+### 1.5 Login - Invalid Credentials (401 Unauthorized)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "wrong@example.com",
+  "password": "wrongpassword"
+}
+
+### 1.6 Login - Validation Error - Missing Fields (400 Bad Request)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### 1.7 Get Profile - No Token (401 Unauthorized)
+GET {{baseUrl}}/auth/me
+
+### 1.8 Get Profile - Invalid Token (401 Unauthorized)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{invalidToken}}
+
+### ========================================
+### 2. PROJECTS ERROR TESTS
+### ========================================
+
+### 2.1 Create Project - No Token (401 Unauthorized)
+POST {{baseUrl}}/projects
+Content-Type: application/json
+
+{
+  "name": "My Project"
+}
+
+### 2.2 Create Project - Invalid Token (401 Unauthorized)
+POST {{baseUrl}}/projects
+Content-Type: application/json
+Authorization: Bearer {{invalidToken}}
+
+{
+  "name": "My Project"
+}
+
+### 2.3 Create Project - Validation Error - Missing Name (400 Bad Request)
+POST {{baseUrl}}/projects
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "description": "No name provided"
+}
+
+### 2.4 Create Project - Validation Error - Extra Fields (400 Bad Request)
+POST {{baseUrl}}/projects
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "My Project",
+  "extraField": "should not be here"
+}
+
+### 2.5 Get Project - Not Found (404 Not Found)
+GET {{baseUrl}}/projects/{{invalidId}}
+Authorization: Bearer {{token}}
+
+### 2.6 Get Project - No Token (401 Unauthorized)
+GET {{baseUrl}}/projects/{{invalidId}}
+
+### 2.7 Update Project - Not Found (404 Not Found)
+PATCH {{baseUrl}}/projects/{{invalidId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Updated Name"
+}
+
+### 2.8 Update Project - Validation Error (400 Bad Request)
+PATCH {{baseUrl}}/projects/valid-project-id-here
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": 123
+}
+
+### 2.9 Delete Project - Not Found (404 Not Found)
+DELETE {{baseUrl}}/projects/{{invalidId}}
+Authorization: Bearer {{token}}
+
+### ========================================
+### 3. TASKS ERROR TESTS
+### ========================================
+
+### 3.1 Create Task - No Token (401 Unauthorized)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{
+  "title": "My Task",
+  "projectId": "some-project-id"
+}
+
+### 3.2 Create Task - Invalid Project ID (404 Not Found)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "My Task",
+  "projectId": "{{invalidId}}"
+}
+
+### 3.3 Create Task - Validation Error - Missing Title (400 Bad Request)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "projectId": "some-project-id"
+}
+
+### 3.4 Create Task - Validation Error - Invalid Status (400 Bad Request)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "My Task",
+  "projectId": "some-project-id",
+  "status": "INVALID_STATUS"
+}
+
+### 3.5 Create Task - Validation Error - Invalid Project ID Format (400 Bad Request)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "My Task",
+  "projectId": "not-a-uuid"
+}
+
+### 3.6 Get Task - Not Found (404 Not Found)
+GET {{baseUrl}}/tasks/{{invalidId}}
+Authorization: Bearer {{token}}
+
+### 3.7 Get Task - No Token (401 Unauthorized)
+GET {{baseUrl}}/tasks/{{invalidId}}
+
+### 3.8 Update Task - Not Found (404 Not Found)
+PATCH {{baseUrl}}/tasks/{{invalidId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "status": "IN_PROGRESS"
+}
+
+### 3.9 Update Task - Validation Error - Invalid Status (400 Bad Request)
+PATCH {{baseUrl}}/tasks/valid-task-id-here
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "status": "INVALID"
+}
+
+### 3.10 Delete Task - Not Found (404 Not Found)
+DELETE {{baseUrl}}/tasks/{{invalidId}}
+Authorization: Bearer {{token}}
+
+### ========================================
+### 4. AUTHORIZATION ERROR TESTS (403 Forbidden)
+### ========================================
+
+### 4.1 Access Another User's Project (403 Forbidden)
+# First, get a project ID from another user, then:
+GET {{baseUrl}}/projects/another-users-project-id
+Authorization: Bearer {{token}}
+
+### 4.2 Update Another User's Project (403 Forbidden)
+PATCH {{baseUrl}}/projects/another-users-project-id
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Trying to update"
+}
+
+### 4.3 Delete Another User's Project (403 Forbidden)
+DELETE {{baseUrl}}/projects/another-users-project-id
+Authorization: Bearer {{token}}
+
+### 4.4 Access Another User's Task (403 Forbidden)
+GET {{baseUrl}}/tasks/another-users-task-id
+Authorization: Bearer {{token}}
+
+### ========================================
+### 5. HEALTH CHECK
+### ========================================
+
+### 5.1 Health Check - Should Always Work
+GET {{baseUrl}}/health
+
+### ========================================
+### 6. EXPECTED ERROR RESPONSE FORMATS
+### ========================================
+
+# All error responses should follow this format:
+# {
+#   "statusCode": 400,
+#   "error": "Bad Request",
+#   "message": "Validation failed",
+#   "timestamp": "2025-01-29T10:30:00.000Z",
+#   "path": "/auth/register"
+# }

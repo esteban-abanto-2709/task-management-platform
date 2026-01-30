@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import {
+  ResourceNotFoundException,
+  UnauthorizedResourceException,
+} from '../../common/exceptions/custom-exceptions';
 
 @Injectable()
 export class ProjectsService {
@@ -29,18 +33,18 @@ export class ProjectsService {
     });
 
     if (!project) {
-      throw new NotFoundException('Project not found');
+      throw new ResourceNotFoundException('Project', id);
     }
 
     if (project.userId !== userId) {
-      throw new ForbiddenException('You do not have access to this project');
+      throw new UnauthorizedResourceException('project');
     }
 
     return project;
   }
 
   async update(id: string, userId: string, updateProjectDto: UpdateProjectDto) {
-    // Verificar que el proyecto existe y pertenece al usuario
+    // Verify that the project exists and belongs to the user
     await this.findOne(id, userId);
 
     return this.prisma.project.update({
@@ -50,7 +54,7 @@ export class ProjectsService {
   }
 
   async remove(id: string, userId: string) {
-    // Verificar que el proyecto existe y pertenece al usuario
+    // Verify that the project exists and belongs to the user
     await this.findOne(id, userId);
 
     return this.prisma.project.delete({
