@@ -91,15 +91,31 @@ Create a `.env` file in the root directory with the following variables:
 # Server Configuration
 PORT=4000
 
-# Database Configuration
-# Format: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
-DATABASE_URL="postgresql://user:password@localhost:5432/taskflow?schema=public"
+# Database Configuration (Supabase)
+# Connect to Supabase via connection pooling (Transaction Pooler - Port 6543)
+DATABASE_URL="postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true"
+
+# Direct connection to the database (Session Pooler - Port 5432)
+# Used for migrations
+DIRECT_URL="postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres"
 
 # JWT Configuration
 # ⚠️ CRITICAL: Use a strong, randomly generated secret in production
 # Generate one with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
 ```
+
+### 🗄️ Database Setup (Supabase)
+
+This project is configured to use **Supabase** as the PostgreSQL provider.
+
+1. Create a new project on [Supabase](https://supabase.com/).
+2. Go to **Project Settings** -> **Database**.
+3. Under **Connection String**, select **URI**.
+4. You will see two connection strings:
+   - **Transaction Pooler (Port 6543):** Use this for `DATABASE_URL`. Ensure you add `?pgbouncer=true` at the end if it's not present.
+   - **Session Pooler (Port 5432):** Use this for `DIRECT_URL`.
+5. Update your `.env` file with these values.
 
 ### ⚠️ Security Warning
 
@@ -119,11 +135,12 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 ### Required Environment Variables
 
-| Variable       | Description                  | Required | Default               |
-| -------------- | ---------------------------- | -------- | --------------------- |
-| `PORT`         | Server port                  | No       | `4000`                |
-| `DATABASE_URL` | PostgreSQL connection string | **Yes**  | -                     |
-| `JWT_SECRET`   | Secret key for JWT tokens    | **Yes**  | ⚠️ Default (insecure) |
+| Variable       | Description                           | Required | Default               |
+| -------------- | ------------------------------------- | -------- | --------------------- |
+| `PORT`         | Server port                           | No       | `4000`                |
+| `DATABASE_URL` | Connection pooling string (Port 6543) | **Yes**  | -                     |
+| `DIRECT_URL`   | Direct connection string (Port 5432)  | **Yes**  | -                     |
+| `JWT_SECRET`   | Secret key for JWT tokens             | **Yes**  | ⚠️ Default (insecure) |
 
 ### Validation
 
