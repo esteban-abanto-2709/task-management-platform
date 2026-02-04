@@ -15,7 +15,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.push(routes.dashboard());
+      router.push(routes.userDashboard(user.slug));
     }
   }, [user, isLoading, router]);
 

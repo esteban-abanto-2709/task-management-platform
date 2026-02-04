@@ -1,9 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileQuestion, Home, ArrowLeft } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
+import { routes } from "@/lib/routes";
 
 export default function NotFound() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
@@ -24,13 +30,17 @@ export default function NotFound() {
 
           <div className="flex flex-col gap-2">
             <Button asChild className="w-full">
-              <Link href="/dashboard">
+              <Link
+                href={
+                  user?.slug ? routes.userDashboard(user.slug) : routes.login()
+                }
+              >
                 <Home className="w-4 h-4 mr-2" />
-                Go to Dashboard
+                {user ? "Go to Dashboard" : "Sign In"}
               </Link>
             </Button>
             <Button asChild variant="outline" className="w-full">
-              <Link href="/">
+              <Link href={routes.home()}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
               </Link>

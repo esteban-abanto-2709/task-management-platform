@@ -62,6 +62,10 @@ export function useProjects() {
     return projects.find((p) => p.id === id);
   };
 
+  const getProjectBySlug = (slug: string) => {
+    return projects.find((p) => p.slug === slug);
+  };
+
   // Expose loadProjects for manual refresh if needed
   const loadProjects = useCallback(async () => {
     if (token) await fetchProjects(token);
@@ -76,5 +80,6 @@ export function useProjects() {
     updateProject,
     deleteProject,
     getProjectById,
+    getProjectBySlug,
   };
 }

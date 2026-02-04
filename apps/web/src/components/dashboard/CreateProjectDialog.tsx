@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { CreateProjectDto } from "@/types/project";
 import { useProjects } from "@/hooks/useProjects";
+import { useAuth } from "@/contexts/auth-context";
 import { useDialogState } from "@/hooks/useDialogState";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,11 +24,13 @@ import { routes } from "@/lib/routes";
 export function CreateProjectDialog() {
   const router = useRouter();
   const { createProject } = useProjects();
+  const { user } = useAuth();
   const dialog = useDialogState();
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateProject = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!user) return;
     setIsCreating(true);
 
     const formData = new FormData(e.currentTarget);
@@ -39,7 +42,7 @@ export function CreateProjectDialog() {
     try {
       const newProject = await createProject(projectData);
       dialog.close();
-      router.push(routes.project(newProject.id));
+      router.push(routes.project(user.slug, newProject.slug));
     } catch (error) {
       console.error("Failed to create project:", error);
     } finally {

@@ -32,8 +32,8 @@ export default function LoginPage() {
     const password = formData.get("password") as string;
 
     try {
-      await login({ email, password });
-      router.push(routes.dashboard());
+      const user = await login({ email, password });
+      router.push(routes.userDashboard(user.slug));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {

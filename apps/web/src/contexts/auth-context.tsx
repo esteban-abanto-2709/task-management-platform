@@ -14,8 +14,8 @@ import { User, AuthResponse, LoginDto, RegisterDto } from "@/types/auth";
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (data: LoginDto) => Promise<void>;
-  register: (data: RegisterDto) => Promise<void>;
+  login: (data: LoginDto) => Promise<User>;
+  register: (data: RegisterDto) => Promise<User>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -59,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("token", response.access_token);
     setToken(response.access_token);
     setUser(response.user);
+    return response.user;
   };
 
   const register = async (data: RegisterDto) => {
@@ -69,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("token", response.access_token);
     setToken(response.access_token);
     setUser(response.user);
+    return response.user;
   };
 
   const logout = () => {

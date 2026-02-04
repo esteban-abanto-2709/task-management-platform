@@ -74,6 +74,29 @@ export function useTasks(options: UseTasksOptions = {}) {
     [token],
   );
 
+  const getTaskBySlug = useCallback(
+    async (slug: string, projectId: string): Promise<Task> => {
+      if (!token) throw new Error("No authentication token");
+
+      try {
+        setIsLoading(true);
+        setError(null);
+        const task = await api.get<Task>(
+          routes.api.tasks.bySlug(slug, projectId),
+          token,
+        );
+        // Cache update logic if needed
+        return task;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load task");
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [token],
+  );
+
   // Crear tarea
   const createTask = async (data: CreateTaskDto): Promise<Task> => {
     if (!token) throw new Error("No authentication token");
@@ -128,5 +151,6 @@ export function useTasks(options: UseTasksOptions = {}) {
     updateTaskStatus,
     deleteTask,
     getTaskById,
+    getTaskBySlug,
   };
 }

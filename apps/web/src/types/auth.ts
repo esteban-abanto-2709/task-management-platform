@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   email: string;
+  slug: string;
   name: string | null;
   createdAt: string;
   updatedAt: string;

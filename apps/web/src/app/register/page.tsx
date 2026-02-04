@@ -33,8 +33,8 @@ export default function RegisterPage() {
     const name = formData.get("name") as string;
 
     try {
-      await register({ email, password, name: name || undefined });
-      router.push(routes.dashboard());
+      const user = await register({ email, password, name: name || undefined });
+      router.push(routes.userDashboard(user.slug));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {

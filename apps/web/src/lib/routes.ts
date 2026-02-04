@@ -4,18 +4,16 @@ export const routes = {
   login: () => "/login",
   register: () => "/register",
 
-  // DASHBOARD
-  dashboard: () => "/dashboard",
-  help: () => "/dashboard/help",
+  help: (userSlug: string) => `/u/${userSlug}/help`,
 
-  // PROJECTS
-  project: (projectId: string) => `/dashboard/projects/${projectId}`,
+  // NEW SLUG ROUTES
+  userDashboard: (userSlug: string) => `/u/${userSlug}`,
+  project: (userSlug: string, projectSlug: string) =>
+    `/u/${userSlug}/p/${projectSlug}`,
+  task: (userSlug: string, projectSlug: string, taskSlug: string) =>
+    `/u/${userSlug}/p/${projectSlug}/t/${taskSlug}`,
 
-  // TASKS
-  task: (projectId: string, taskId: string) =>
-    `/dashboard/projects/${projectId}/tasks/${taskId}`,
-
-  // API (opcional)
+  // API
   api: {
     auth: {
       login: () => "/auth/login",
@@ -24,12 +22,15 @@ export const routes = {
     },
     projects: {
       list: () => "/projects",
-      detail: (projectId: string) => `/projects/${projectId}`,
+      detail: (projectId: string) => `/projects/${projectId}`, // Still needed for internal updates by ID?
+      bySlug: (slug: string) => `/projects/slug/${slug}`,
     },
     tasks: {
       list: (projectId?: string) =>
         projectId ? `/tasks?projectId=${projectId}` : "/tasks",
       detail: (taskId: string) => `/tasks/${taskId}`,
+      bySlug: (slug: string, projectId: string) =>
+        `/tasks/slug/${slug}?projectId=${projectId}`,
     },
   },
 } as const;
