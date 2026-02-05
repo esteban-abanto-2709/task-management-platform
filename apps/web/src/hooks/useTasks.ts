@@ -1,4 +1,5 @@
 "use client";
+import { Priority } from "@/types/task";
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/auth-context";
@@ -127,6 +128,14 @@ export function useTasks(options: UseTasksOptions = {}) {
     return updateTask(id, { status });
   };
 
+  // Actualizar solo la prioridad (helper común)
+  const updateTaskPriority = async (
+    id: string,
+    priority: Priority,
+  ): Promise<Task> => {
+    return updateTask(id, { priority });
+  };
+
   // Eliminar tarea
   const deleteTask = async (id: string): Promise<void> => {
     if (!token) throw new Error("No authentication token");
@@ -149,6 +158,7 @@ export function useTasks(options: UseTasksOptions = {}) {
     createTask,
     updateTask,
     updateTaskStatus,
+    updateTaskPriority,
     deleteTask,
     getTaskById,
     getTaskBySlug,

@@ -15,16 +15,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { routes } from "@/lib/routes";
 
 import { TaskDetailSkeleton } from "@/components/dashboard/TaskDetailSkeleton";
+import { StatusSelect } from "@/components/dashboard/StatusSelect";
+import { PrioritySelect } from "@/components/dashboard/PrioritySelect";
 
 export default function TaskDetailPage() {
   const params = useParams();
@@ -124,6 +120,25 @@ export default function TaskDetailPage() {
     }
   };
 
+  const getPriorityLabel = (priority: any) => {
+    return priority?.replace("_", " ") || "MEDIUM";
+  };
+
+  const getPriorityColorClass = (priority: any) => {
+    switch (priority) {
+      case "VERY_HIGH":
+        return "bg-red-100 text-red-800 hover:bg-red-100";
+      case "HIGH":
+        return "bg-orange-100 text-orange-800 hover:bg-orange-100";
+      case "MEDIUM":
+        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100";
+      case "LOW":
+        return "bg-green-100 text-green-800 hover:bg-green-100";
+      default:
+        return "bg-gray-100 text-gray-800 hover:bg-gray-100";
+    }
+  };
+
   if (isAuthLoading || (projectId && isTaskLoading) || isLoadingProjects) {
     return <TaskDetailSkeleton />;
   }
@@ -175,25 +190,31 @@ export default function TaskDetailPage() {
                         disabled={editor.isSaving}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Select
-                        value={editor.editedData.status}
-                        onValueChange={(value: TaskStatus) =>
-                          editor.handleChange("status", value)
-                        }
-                        disabled={editor.isSaving}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={TaskStatus.TODO}>Todo</SelectItem>
-                          <SelectItem value={TaskStatus.DOING}>
-                            Doing
-                          </SelectItem>
-                          <SelectItem value={TaskStatus.DONE}>Done</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="flex gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          Status
+                        </label>
+                        <StatusSelect
+                          value={editor.editedData.status}
+                          onChange={(value) =>
+                            editor.handleChange("status", value)
+                          }
+                          disabled={editor.isSaving}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          Priority
+                        </label>
+                        <PrioritySelect
+                          value={editor.editedData.priority}
+                          onChange={(value) =>
+                            editor.handleChange("priority", value)
+                          }
+                          disabled={editor.isSaving}
+                        />
+                      </div>
                     </div>
                   </>
                 ) : (
@@ -203,6 +224,14 @@ export default function TaskDetailPage() {
                       <div className="flex items-center gap-2">
                         <Badge variant={getStatusBadgeVariant(task.status)}>
                           {getStatusLabel(task.status)}
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className={`border-0 ${getPriorityColorClass(
+                            task.priority,
+                          )}`}
+                        >
+                          {getPriorityLabel(task.priority)}
                         </Badge>
                       </div>
                     </div>

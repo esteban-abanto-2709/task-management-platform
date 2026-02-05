@@ -8,7 +8,7 @@
 
 - [ ] **Update Prisma Schema**
   - Add `Visibility` enum (PUBLIC, PRIVATE) to Project
-  - Add `Priority` enum (VERY_HIGH...VERY_LOW) to Task
+  - [x] Add `Priority` enum (VERY_HIGH...VERY_LOW) to Task
   - [x] Rename `TaskStatus` OPEN -> TODO (and IN_PROGRESS -> DOING)
   - Create `Feature` model (id, name, description, projectId)
   - Update relations (Project -> Features -> Tasks)
@@ -19,8 +19,9 @@
   - Create CRUD endpoints for Features
   - Ensure Project ownership validation
 - [ ] **Task Enhancements**
-  - Update Task DTOs to support Priority and FeatureId
-  - Implement linking tasks to features
+  - [x] Update Task DTOs to support Priority
+  - [ ] Support FeatureId in Task DTOs
+  - [ ] Implement linking tasks to feature
 - [ ] **Project Enhancements**
   - Implement visibility logic in `findOne` (allow public access without auth options)
 

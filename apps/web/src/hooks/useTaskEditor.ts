@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Task, UpdateTaskDto, TaskStatus } from "@/types/task";
+import { Task, UpdateTaskDto, TaskStatus, Priority } from "@/types/task";
 
 interface UseTaskEditorOptions {
   task: Task | null;
@@ -40,6 +40,7 @@ export function useTaskEditor({ task, onUpdate }: UseTaskEditorOptions) {
     title: "",
     description: "",
     status: TaskStatus.TODO,
+    priority: Priority.MEDIUM,
   });
 
   // Sincronizar datos editados con la tarea actual
@@ -49,6 +50,7 @@ export function useTaskEditor({ task, onUpdate }: UseTaskEditorOptions) {
         title: task.title,
         description: task.description || "",
         status: task.status,
+        priority: task.priority,
       });
     }
   }, [task]);
@@ -60,7 +62,7 @@ export function useTaskEditor({ task, onUpdate }: UseTaskEditorOptions) {
 
   // Manejar cambios en los campos
   const handleChange = useCallback(
-    (field: keyof typeof editedData, value: string | TaskStatus) => {
+    (field: keyof typeof editedData, value: string | TaskStatus | Priority) => {
       setEditedData((prev) => ({
         ...prev,
         [field]: value,
@@ -75,7 +77,9 @@ export function useTaskEditor({ task, onUpdate }: UseTaskEditorOptions) {
     return (
       editedData.title !== task.title ||
       editedData.description !== (task.description || "") ||
-      editedData.status !== task.status
+      editedData.description !== (task.description || "") ||
+      editedData.status !== task.status ||
+      editedData.priority !== task.priority
     );
   }, [task, editedData]);
 
@@ -99,6 +103,8 @@ export function useTaskEditor({ task, onUpdate }: UseTaskEditorOptions) {
           ? editedData.description
           : undefined,
       status: editedData.status !== task.status ? editedData.status : undefined,
+      priority:
+        editedData.priority !== task.priority ? editedData.priority : undefined,
     };
 
     try {
@@ -119,6 +125,7 @@ export function useTaskEditor({ task, onUpdate }: UseTaskEditorOptions) {
         title: task.title,
         description: task.description || "",
         status: task.status,
+        priority: task.priority,
       });
     }
     setIsEditing(false);

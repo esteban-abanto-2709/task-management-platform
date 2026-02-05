@@ -15,10 +15,9 @@
 
 ### 1.2 Advanced Classification
 
-- [ ] **Priority System**
-  - Implementar 5 niveles: Very High, High, Medium, Low, Very Low
-  - Visual badges/colors para cada prioridad
-  - Ordenamiento por prioridad en tableros
+- [x] **Priority System**
+  - [x] Implementar 5 niveles: Very High, High, Medium, Low, Very Low
+  - [x] Visual badges/colors para cada prioridad
 
 - [x] **Workflow Refinement**
   - Renombrar estado: "OPEN" → "TODO"

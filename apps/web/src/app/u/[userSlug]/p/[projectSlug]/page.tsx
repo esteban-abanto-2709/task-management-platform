@@ -23,14 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { CreateTaskDto, TaskStatus } from "@/types/task";
+import { CreateTaskDto, TaskStatus, Priority } from "@/types/task";
 import { ArrowLeft, Save, Trash2, Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -41,6 +34,8 @@ import { useDialogState } from "@/hooks/useDialogState";
 import { routes } from "@/lib/routes";
 
 import { ProjectDetailSkeleton } from "@/components/dashboard/ProjectDetailSkeleton";
+import { StatusSelect } from "@/components/dashboard/StatusSelect";
+import { PrioritySelect } from "@/components/dashboard/PrioritySelect";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -62,6 +57,7 @@ export default function ProjectDetailPage() {
     isLoading: isLoadingTasks,
     createTask,
     updateTaskStatus,
+    updateTaskPriority,
   } = useTasks({ projectId }); // projectId can be undefined, hook handles it
 
   const isLoading = isLoadingProjects || (projectId && isLoadingTasks);
@@ -131,6 +127,17 @@ export default function ProjectDetailPage() {
       await updateTaskStatus(taskId, newStatus);
     } catch (error) {
       console.error("Failed to update task status:", error);
+    }
+  };
+
+  const handlePriorityChange = async (
+    taskId: string,
+    newPriority: Priority,
+  ) => {
+    try {
+      await updateTaskPriority(taskId, newPriority);
+    } catch (error) {
+      console.error("Failed to update task priority:", error);
     }
   };
 
@@ -315,6 +322,7 @@ export default function ProjectDetailPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Task</TableHead>
+                      <TableHead>Priority</TableHead>
                       <TableHead>Created</TableHead>
                       <TableHead>Status</TableHead>
                     </TableRow>
@@ -336,31 +344,24 @@ export default function ProjectDetailPage() {
                             </Link>
                           </div>
                         </TableCell>
+                        <TableCell>
+                          <PrioritySelect
+                            value={task.priority}
+                            onChange={(value) =>
+                              handlePriorityChange(task.id, value)
+                            }
+                          />
+                        </TableCell>
                         <TableCell className="text-muted-foreground">
                           {new Date(task.createdAt).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
-                          <Select
+                          <StatusSelect
                             value={task.status}
-                            onValueChange={(value: TaskStatus) =>
+                            onChange={(value) =>
                               handleStatusChange(task.id, value)
                             }
-                          >
-                            <SelectTrigger className="w-[140px]">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value={TaskStatus.TODO}>
-                                Todo
-                              </SelectItem>
-                              <SelectItem value={TaskStatus.DOING}>
-                                Doing
-                              </SelectItem>
-                              <SelectItem value={TaskStatus.DONE}>
-                                Done
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
+                          />
                         </TableCell>
                       </TableRow>
                     ))}

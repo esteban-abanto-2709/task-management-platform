@@ -18,10 +18,10 @@
   - Add Visibility Badge in Project Card
   - Implement "Public View" layout for non-owners
 
-- [ ] **Priority System UI**
-  - Component: Priority Badge (with distinct colors)
-  - Input: Priority selector in Task Form
-  - Sort/Filter by Priority
+- [x] **Priority System UI**
+  - [x] Component: Priority Badge (with distinct colors)
+  - [x] Input: Priority selector in Task Form
+  - [ ] Sort/Filter by Priority
 
 - [ ] **Feature Management**
   - UI for creating/managing Features within a Project
