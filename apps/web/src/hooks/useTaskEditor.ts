@@ -39,7 +39,7 @@ export function useTaskEditor({ task, onUpdate }: UseTaskEditorOptions) {
   const [editedData, setEditedData] = useState({
     title: "",
     description: "",
-    status: TaskStatus.OPEN,
+    status: TaskStatus.TODO,
   });
 
   // Sincronizar datos editados con la tarea actual

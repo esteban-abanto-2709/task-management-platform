@@ -350,11 +350,11 @@ export default function ProjectDetailPage() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value={TaskStatus.OPEN}>
-                                Open
+                              <SelectItem value={TaskStatus.TODO}>
+                                Todo
                               </SelectItem>
-                              <SelectItem value={TaskStatus.IN_PROGRESS}>
-                                In Progress
+                              <SelectItem value={TaskStatus.DOING}>
+                                Doing
                               </SelectItem>
                               <SelectItem value={TaskStatus.DONE}>
                                 Done

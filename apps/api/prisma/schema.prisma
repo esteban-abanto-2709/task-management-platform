@@ -35,8 +35,8 @@ model Project {
 }
 
 enum TaskStatus {
-  OPEN
-  IN_PROGRESS
+  TODO
+  DOING
   DONE
 }
 
@@ -45,7 +45,7 @@ model Task {
   title       String
   slug        String
   description String?
-  status      TaskStatus @default(OPEN)
+  status      TaskStatus @default(TODO)
   projectId   String
   project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt   DateTime   @default(now())

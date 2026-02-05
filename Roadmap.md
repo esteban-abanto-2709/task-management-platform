@@ -20,7 +20,7 @@
   - Visual badges/colors para cada prioridad
   - Ordenamiento por prioridad en tableros
 
-- [ ] **Workflow Refinement**
+- [x] **Workflow Refinement**
   - Renombrar estado: "OPEN" → "TODO"
   - Migración de datos existentes
 

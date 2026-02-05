@@ -9,7 +9,7 @@
 - [ ] **Update Prisma Schema**
   - Add `Visibility` enum (PUBLIC, PRIVATE) to Project
   - Add `Priority` enum (VERY_HIGH...VERY_LOW) to Task
-  - Rename `TaskStatus` OPEN -> TODO
+  - [x] Rename `TaskStatus` OPEN -> TODO (and IN_PROGRESS -> DOING)
   - Create `Feature` model (id, name, description, projectId)
   - Update relations (Project -> Features -> Tasks)
 

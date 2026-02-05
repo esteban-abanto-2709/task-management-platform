@@ -12,7 +12,7 @@ export function StatsGrid({ projectsCount }: StatsGridProps) {
   const { tasks, isLoading } = useTasks({ autoLoad: true });
 
   const activeTasks = tasks.filter(
-    (t) => t.status === TaskStatus.OPEN || t.status === TaskStatus.IN_PROGRESS,
+    (t) => t.status === TaskStatus.TODO || t.status === TaskStatus.DOING,
   ).length;
 
   const completedTasks = tasks.filter(

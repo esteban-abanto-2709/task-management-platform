@@ -100,9 +100,9 @@ export default function TaskDetailPage() {
 
   const getStatusBadgeVariant = (status: TaskStatus) => {
     switch (status) {
-      case TaskStatus.OPEN:
+      case TaskStatus.TODO:
         return "secondary";
-      case TaskStatus.IN_PROGRESS:
+      case TaskStatus.DOING:
         return "default";
       case TaskStatus.DONE:
         return "outline";
@@ -113,10 +113,10 @@ export default function TaskDetailPage() {
 
   const getStatusLabel = (status: TaskStatus) => {
     switch (status) {
-      case TaskStatus.OPEN:
-        return "Open";
-      case TaskStatus.IN_PROGRESS:
-        return "In Progress";
+      case TaskStatus.TODO:
+        return "Todo";
+      case TaskStatus.DOING:
+        return "Doing";
       case TaskStatus.DONE:
         return "Done";
       default:
@@ -187,9 +187,9 @@ export default function TaskDetailPage() {
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={TaskStatus.OPEN}>Open</SelectItem>
-                          <SelectItem value={TaskStatus.IN_PROGRESS}>
-                            In Progress
+                          <SelectItem value={TaskStatus.TODO}>Todo</SelectItem>
+                          <SelectItem value={TaskStatus.DOING}>
+                            Doing
                           </SelectItem>
                           <SelectItem value={TaskStatus.DONE}>Done</SelectItem>
                         </SelectContent>

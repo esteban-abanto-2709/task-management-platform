@@ -25,12 +25,11 @@
 
 - [ ] **Feature Management**
   - UI for creating/managing Features within a Project
-  - "Group by Feature" view in Kanban/List
+  - "Group by Feature" view
   - Task Form update: Select Feature
 
-- [ ] **Workflow Updates**
-  - Update Kanban columns (TODO label)
-  - Ensure drag-and-drop works with new status enum
+- [x] **Workflow Updates**
+  - Update columns (TODO label)
 
 ---
 
