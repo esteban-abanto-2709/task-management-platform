@@ -1,15 +1,22 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { HelpCircle, Mail, Book, ArrowLeft } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, Mail, Book, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { routes } from "@/lib/routes";
 
-export default function HelpPage({ params }: { params: { userSlug: string } }) {
+export default function HelpPage() {
+  const params = useParams();
+  const userSlug = params.userSlug as string;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" asChild>
-          <Link href={routes.userDashboard(params.userSlug)}>
+          <Link href={routes.userDashboard(userSlug)}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Link>
