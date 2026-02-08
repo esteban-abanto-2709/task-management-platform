@@ -1,17 +1,41 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Terminal, Code2, Users, ArrowRight, Activity } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { routes } from "@/lib/routes";
+import { useAuthModal } from "@/hooks/use-auth-modal";
 
 export default function LandingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <LandingPageContent />
+    </Suspense>
+  );
+}
+
+function LandingPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isLoading } = useAuth();
+  const { onOpen } = useAuthModal();
+
+  useEffect(() => {
+    const auth = searchParams.get("auth");
+    if (auth === "login") {
+      onOpen("login");
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    } else if (auth === "register") {
+      onOpen("register");
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [searchParams, onOpen]);
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -43,18 +67,16 @@ export default function LandingPage() {
           <div className="flex gap-4">
             <Button
               variant="ghost"
-              asChild
               className="text-muted-foreground hover:text-foreground font-medium"
+              onClick={() => onOpen("login")}
             >
-              <Link href={routes.login()}>Login</Link>
+              Login
             </Button>
             <Button
-              asChild
               className="font-semibold shadow-lg shadow-primary/20"
+              onClick={() => onOpen("register")}
             >
-              <Link href={routes.register()}>
-                Get Started <ArrowRight className="ml-2 size-4" />
-              </Link>
+              Get Started <ArrowRight className="ml-2 size-4" />
             </Button>
           </div>
         </div>
@@ -89,17 +111,17 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 className="h-12 px-8 text-base shadow-xl shadow-primary/20"
-                asChild
+                onClick={() => onOpen("register")}
               >
-                <Link href={routes.register()}>Start Building</Link>
+                Start Building
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 className="h-12 px-8 text-base bg-secondary/50 backdrop-blur-sm hover:bg-secondary/80 border-border/50"
-                asChild
+                onClick={() => onOpen("login")}
               >
-                <Link href={routes.login()}>View Demo</Link>
+                View Demo
               </Button>
             </div>
 

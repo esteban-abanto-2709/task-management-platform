@@ -1,19 +1,15 @@
 export const routes = {
-  // PUBLIC
   home: () => "/",
-  login: () => "/login",
-  register: () => "/register",
+  login: () => "/?auth=login",
 
-  help: (userSlug: string) => `/u/${userSlug}/help`,
-
-  // NEW SLUG ROUTES
   userDashboard: (userSlug: string) => `/u/${userSlug}`,
   project: (userSlug: string, projectSlug: string) =>
     `/u/${userSlug}/p/${projectSlug}`,
   task: (userSlug: string, projectSlug: string, taskSlug: string) =>
     `/u/${userSlug}/p/${projectSlug}/t/${taskSlug}`,
 
-  // API
+  help: (userSlug: string) => `/u/${userSlug}/help`,
+
   api: {
     auth: {
       login: () => "/auth/login",
@@ -22,7 +18,7 @@ export const routes = {
     },
     projects: {
       list: () => "/projects",
-      detail: (projectId: string) => `/projects/${projectId}`, // Still needed for internal updates by ID?
+      detail: (projectId: string) => `/projects/${projectId}`,
       bySlug: (slug: string) => `/projects/slug/${slug}`,
     },
     tasks: {
